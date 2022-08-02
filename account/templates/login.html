@@ -1,0 +1,27 @@
+{% extends 'layouts/base.html' %}
+{% load static %}
+{% load i18n %}
+{% load crispy_forms_tags %}
+
+{% block head %}
+<link rel="stylesheet" type="text/css" href="{% static 'accounts/css/login.css' %}">
+
+{% endblock %}
+
+{% block content %}
+<div class="content-wrapper">
+  <h1 class="title">Connectez-Vous</h1>
+
+  <form method="POST" action="#">
+    {% csrf_token %}
+    {{ login_form|crispy }}
+    <input type="submit" value="{% trans 'Connexion' %}">
+
+    <div class="link-form control-group">
+      <a href="#" class="link"> Mot de passe oublié?</a>
+      <a href="#" class="link"> Créez-vous un compte</a>
+    </div>
+  </form>
+
+</div>
+{% endblock %}
