@@ -41,6 +41,9 @@ INSTALLED_APPS = [
     # Custom apps
 
     'account',
+
+    # External
+
 ]
 
 MIDDLEWARE = [
@@ -103,7 +106,7 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
+AUTH_USER_MODEL = "account.User" 
 # Internationalization
 # https://docs.djangoproject.com/en/4.0/topics/i18n/
 
