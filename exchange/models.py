@@ -1,3 +1,22 @@
 from django.db import models
 
-# Create your models here.
+class Exchange(models.Model):
+
+    name                    = models.CharField(max_length=255)
+
+class ExchangeApi(models.Model):
+
+    exchange                = models.ForeignKey(Exchange, on_delete=models.CASCADE)
+    authentication          = models.JSONField()
+
+class Currency(models.Model):
+
+    name                    = models.CharField(max_length=255)
+    exchange                = models.ForeignKey(Exchange, on_delete=models.CASCADE)
+
+class Pair(models.Model):
+
+#    exchange                = models.ForeignKey(Exchange, on_delete=models.CASCADE)
+    currency_1               = models.ForeignKey(Currency, on_delete=models.CASCADE , related_name="currency_1")
+    currency_2               = models.ForeignKey(Currency, on_delete=models.CASCADE , related_name="currency_2")
+    
