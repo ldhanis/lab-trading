@@ -3,9 +3,9 @@ from account.forms import UserLoginForm, CustomUserCreationForm
 
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
-from django.utils.http import is_safe_url
+from django.utils.http import url_has_allowed_host_and_scheme
 
-from auto_immo import settings
+from lab_trading import settings
 
 from account.models import *
 
@@ -15,7 +15,7 @@ def redirect_after_login(request):
 	nxt = request.GET.get("next", None)
 	if nxt is None:
 		return redirect(settings.LOGIN_REDIRECT_URL)
-	elif not is_safe_url(
+	elif not url_has_allowed_host_and_scheme(
 			url=nxt,
 			allowed_hosts={request.get_host()},
 			require_https=request.is_secure()):
