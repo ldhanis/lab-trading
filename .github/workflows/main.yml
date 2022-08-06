@@ -5,11 +5,11 @@ name: CI-CD-Pipeline-to-AWS-ElasticBeanstalk
 # env keys
 
 env:
-  EB_PACKAGE_S3_BUCKET_NAME : "lab-trading"
-  EB_APPLICATION_NAME       : "lab-trading"
-  EB_ENVIRONMENT_NAME       : "lab-trading-env"
+  EB_PACKAGE_S3_BUCKET_NAME : "lab-trading-deployment-bucket"
+  EB_APPLICATION_NAME       : "lab-trading-django"
+  EB_ENVIRONMENT_NAME       : "Labtradingdjango-env"
   DEPLOY_PACKAGE_NAME       : "django-app-${{ github.sha }}.zip"
-  AWS_REGION_NAME           : "eu-west-3"
+  AWS_REGION_NAME           : "eu-east-1"
   AWS_VERSION_LABEL         : "V-${{ github.sha }}"
 
 on:
