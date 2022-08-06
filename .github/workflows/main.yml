@@ -1,0 +1,43 @@
+
+
+name: CI-CD-Pipeline-to-AWS-ElasticBeanstalk
+
+env:
+  EB_PACKAGE_S3_BUCKET_NAME : "lab-trading"
+  EB_APPLICATION_NAME       : "lab-trading"
+  EB_ENVIRONMENT_NAME       : "lab-trading-env"
+  DEPLOY_PACKAGE_NAME       : "django-app-${{ github.sha }}.zip"
+  AWS_REGION_NAME           : "us-east-1"
+ 
+
+on:
+
+  push:
+    branches: 
+      -main
+
+
+
+jobs:
+ ci_pipeline:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Git clone our repository
+        uses: actions/checkout@v1
+      
+      - name: Create ZIP deployment package
+        run: zip -r ${{ env.DEPLOY_PACKAGE_NAME }} ./ -x *.git*
+      
+      - name: Convigure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with: 
+          aws-access-key-id     : ${{ secrets.AWS_ID_KEY }}
+          aws-secret-access-key : ${{ secrets.AWS_SECRET_KEY }}
+          aws-region            : ${{ env.AWS_REGION_NAME }}
+          
+      - name: Copy our Deployment package to S3 bucket
+        run : aws s3 cp ${{ env.DEPLOY_PACKAGE_NAME }} s3://${{ env.EB_PACKAGE_S3_BUCKET_NAME }}/
+        
+      - name: Print nice message on completion
+        run : echo "CI Pipeline finished successfully" 
