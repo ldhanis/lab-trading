@@ -23,3 +23,4 @@ class Pair(models.Model):
     currency_2              = models.ForeignKey(Currency, on_delete=models.CASCADE , related_name="currency_2")
     is_active               = models.BooleanField(default = True)
     symbol                  = models.CharField(max_length=255)
+

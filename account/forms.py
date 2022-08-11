@@ -62,39 +62,12 @@ class CustomUserCreationForm(UserCreationForm):
 	class Meta:
 		model = User
 		fields = ["email", "first_name", "last_name", "password1", "password2"]
-
-class ExchangeForm(forms.ModelForm):
-
-	name = forms.CharField(widget=forms.TextInput(attrs={
-		'class': 'form-control'
-	}), required=True, label=_('Nom'), label_suffix='*:')
-
-	class Meta:
-		model = Exchange
-		fields = ['name']
 	
 
-class CurrencyForm(forms.ModelForm):
-	
-	name = forms.CharField(widget=forms.TextInput(attrs={
-		'class': 'form-control'
-	}), required=True, label=_('Nom'), label_suffix='*:')
 
-	symbol = forms.CharField(widget=forms.TextInput(attrs={
-		'class': 'form-control'
-	}), required=True, label=_('Symbole'), label_suffix='*:')
+# class TradingScreenForm(forms.ModelForm):
+# 	class Meta:
+# 		model = Exchange
+# 		fields = ['user','exchange_api','allowed_pairs']
 
-	class Meta:
-		model = Currency
-		fields = ['name', 'symbol']
-
-class PairForm(forms.ModelForm):
-
-	class Meta:
-		model = Exchange
-		fields = ['currency_1' , 'currency_2' , 'symbol']
-	
-	name = forms.CharField(widget=forms.TextInput(attrs={
-		'class': 'form-control'
-	}), required=True, label=_('Nom'), label_suffix='*:')
 
