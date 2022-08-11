@@ -1,4 +1,3 @@
-from symtable import Symbol
 from django.db import models
 
 class Exchange(models.Model):

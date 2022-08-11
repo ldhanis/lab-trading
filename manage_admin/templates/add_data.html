@@ -1,0 +1,42 @@
+{% load static %}
+{% load i18n %}
+{% load crispy_forms_tags %}
+
+{% block head %}
+<link rel="stylesheet" type="text/css" href="{% static 'accounts/css/login.css' %}">
+
+{% endblock %}
+
+{% block content %}
+<div class="content-wrapper">
+
+  <h3 class="title">Add Exchange</h3>
+  <form method="POST" action="{% url 'Create_Exchange_Post'%}">
+    {% csrf_token %}
+    {{ exchange_form|crispy }}
+    <input type="submit" value="Add Exchange">
+  </form>
+
+  <h3 class="title">Add Exchange Api</h3>
+  <form method="POST" action="#">
+    {% csrf_token %}
+    {{ exchange_api_form|crispy }}
+    <input type="submit" value="Add Exchange Api">
+  </form>
+
+  <h3 class="title">Add Currency</h3>
+  <form method="POST" action="#">
+    {% csrf_token %}
+    {{ currency_form|crispy }}
+    <input type="submit" value="Add Currency">
+  </form>
+
+  <h3 class="title">Add Pair</h3>
+  <form method="POST" action="#">
+    {% csrf_token %}
+    {{ pair_form|crispy }}
+    <input type="submit" value="Add Pair">
+  </form> 
+
+</div>
+{% endblock %}

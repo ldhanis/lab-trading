@@ -1,8 +1,41 @@
-from django.shortcuts import render
+from django.shortcuts import render, HttpResponseRedirect
 from django.contrib.admin.views.decorators import staff_member_required
+
+from exchange.forms import ExchangeForm, ExchangeApiForm, CurrencyForm, PairForm
 
 @staff_member_required
 def Create(request):
 
-    print("dedans")
-    return render(request , "add_data.html")
+    exchange_form           = ExchangeForm()
+    exchange_api_form       = ExchangeApiForm()
+    currency_form           = CurrencyForm()
+    pair_form               = PairForm()
+    context = {
+        'exchange_form'     : exchange_form,
+        'exchange_api_form' : exchange_api_form, 
+        'currency_form'     : currency_form, 
+        'pair_form'         : pair_form,
+    }
+    return render(request , "add_data.html", context)
+
+def CreateExchange(request):
+
+    if request.method == 'POST':
+        current_form = ExchangeForm(request.POST)
+
+        if current_form.is_valid():
+            exchange = current_form.save()
+            return HttpResponseRedirect('/thanks/')
+    else:
+        exchange_form           = ExchangeForm()
+        exchange_api_form       = ExchangeApiForm()
+        currency_form           = CurrencyForm()
+        pair_form               = PairForm()
+        context = {
+            'exchange_form'     : exchange_form,
+            'exchange_api_form' : exchange_api_form, 
+            'currency_form'     : currency_form, 
+            'pair_form'         : pair_form,
+        }
+        return render(request , "add_data.html", context)
+
