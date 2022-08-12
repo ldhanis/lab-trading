@@ -99,6 +99,7 @@ def CreateCurrency(request):
     }
     return render(request , "add_data.html", context)
 
+@staff_member_required
 def CreatePair(request):
 
     pair_form               = PairForm()
@@ -124,6 +125,7 @@ def CreatePair(request):
     }
     return render(request , "add_data.html", context)
 
+@staff_member_required
 def CreateTradingScreen(request):
 
     trading_screen_form     = TradingScreenForm()
@@ -134,7 +136,7 @@ def CreateTradingScreen(request):
         if trading_screen_form.is_valid():
             trading_screen_form.save()
             return HttpResponseRedirect('/thanks/')
-            
+
     exchange_form           = ExchangeForm()
     exchange_api_form       = ExchangeApiForm()
     currency_form           = CurrencyForm()
