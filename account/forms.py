@@ -5,7 +5,7 @@ from django.utils.translation import gettext_lazy as _
 from django.contrib.auth import authenticate, login, logout
 
 from account.models import User
-from exchange.models import Exchange, Currency, Pair
+from exchange.models import Exchange, Currency, ExchangeApi, Pair
 
 class DateInput(forms.DateInput):
 	input_type = "date"
@@ -65,9 +65,24 @@ class CustomUserCreationForm(UserCreationForm):
 	
 
 
-# class TradingScreenForm(forms.ModelForm):
-# 	class Meta:
-# 		model = Exchange
-# 		fields = ['user','exchange_api','allowed_pairs']
+class TradingScreenForm(forms.ModelForm):
+	user = forms.ModelMultipleChoiceField(
+        queryset=User.objects.all(),
+        widget=forms.CheckboxSelectMultiple(attrs={'class':'form-control'}),
+		label=_('Users'), label_suffix='*:', 
+    )
+	allowed_pairs = forms.ModelMultipleChoiceField(
+        queryset=Pair.objects.all(),
+        widget=forms.CheckboxSelectMultiple(attrs={'class':'form-control'}),
+		label=_('Allowed Pairs'), label_suffix='*:', 
+    )
+	exchange_api 			= forms.ModelChoiceField(required = True, 
+	queryset = ExchangeApi.objects.all(), 
+	label=_('First Currency'), label_suffix='*:', 
+	widget=forms.Select(attrs={'class':'form-control'}))
+	
+	class Meta:
+		model = Exchange
+		fields = ['user','exchange_api','allowed_pairs']
 
 

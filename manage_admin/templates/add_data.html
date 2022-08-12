@@ -28,16 +28,23 @@
   </form>
 
   <h3 class="title">Add Currency</h3>
-  <form method="POST" action="#">
+  <form method="POST" action="{% url 'create_currency_post'%}">
     {% csrf_token %}
     {{ currency_form|crispy }}
     <input type="submit" value="Add Currency">
   </form>
 
   <h3 class="title">Add Pair</h3>
-  <form method="POST" action="#">
+  <form method="POST" action="{% url 'create_pair_post'%}">
     {% csrf_token %}
     {{ pair_form|crispy }}
+    <input type="submit" value="Add Pair">
+  </form> 
+
+  <h3 class="title">Add Trading Screen</h3>
+  <form method="POST" action="{% url 'create_trading_screen_post'%}">
+    {% csrf_token %}
+    {{ trading_screen_form|crispy }}
     <input type="submit" value="Add Pair">
   </form> 
 
