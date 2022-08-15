@@ -78,7 +78,7 @@ class TradingScreenForm(forms.ModelForm):
     )
 	exchange_api 			= forms.ModelChoiceField(required = True, 
 	queryset = ExchangeApi.objects.all(), 
-	label=_('First Currency'), label_suffix='*:', 
+	label=_('Exchange API'), label_suffix='*:', 
 	widget=forms.Select(attrs={'class':'form-control'}))
 	
 	class Meta:

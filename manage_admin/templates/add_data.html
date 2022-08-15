@@ -10,14 +10,6 @@
 {% block content %}
 <div class="content-wrapper">
 
-  
-  <h3 class="title">Add Exchange</h3>
-  <form method="POST" action="{% url 'create_exchange_post'%}">
-    {% csrf_token %}
-    {{ exchange_form|crispy }}
-    <input type="submit" value="Add Exchange">
-  </form>
-
   <h3 class="title">Add Exchange Api</h3>
   <form method="POST" action="{% url 'create_exchange_api_post'%}">
     <div id='form-errors'>{{ exchange_api_form_errors }}</div>

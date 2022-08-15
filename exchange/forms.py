@@ -24,9 +24,9 @@ class CurrencyForm(forms.ModelForm):
         'class': 'form-control'
     }),  label=_('Name'), label_suffix='*:')
 
-    symbol = forms.CharField(required=True, widget=forms.TextInput(attrs={
-        'class': 'form-control'
-    }), label=_('symbol'), label_suffix='*:')
+    # symbol = forms.CharField(required=True, widget=forms.TextInput(attrs={
+    #     'class': 'form-control'
+    # }), label=_('symbol'), label_suffix='*:')
 
     class Meta:
         model = Currency
@@ -40,9 +40,9 @@ class PairForm(forms.ModelForm):
     currency_2 = forms.ModelChoiceField(required=True, queryset=Currency.objects.all(), label=_(
         'Second Currency'), label_suffix='*:', widget=forms.Select(attrs={'class': 'form-control'}))
 
-    symbol = forms.CharField(widget=forms.TextInput(attrs={
-        'class': 'form-control'
-    }), required=True, label=_('Symbol'), label_suffix='*:')
+    # symbol = forms.CharField(widget=forms.TextInput(attrs={
+    #     'class': 'form-control'
+    # }), required=True, label=_('Symbol'), label_suffix='*:')
 
     class Meta:
         model = Pair
