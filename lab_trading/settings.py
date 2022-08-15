@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'account',
     'exchange',
     'trading_platform',
+    'manage_admin',
 
     # External
 
@@ -52,8 +53,8 @@ INSTALLED_APPS = [
 ]
 
 LOGIN_REDIRECT_URL = '/account/'
-
 ASGI_APPLICATION = 'lab_trading.asgi.application'
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -115,7 +116,7 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-AUTH_USER_MODEL = "account.User" 
+AUTH_USER_MODEL = 'account.User'
 # Internationalization
 # https://docs.djangoproject.com/en/4.0/topics/i18n/
 

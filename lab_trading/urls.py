@@ -21,4 +21,6 @@ urlpatterns = [
     path('account/', include('account.urls')),
     path('', include('exchange.urls')),
     path('trading/', include('trading_platform.urls')),
+    path('manage/', include('manage_admin.urls')),
+
 ]

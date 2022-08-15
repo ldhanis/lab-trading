@@ -1,0 +1,52 @@
+{% load static %}
+{% load i18n %}
+{% load crispy_forms_tags %}
+
+{% block head %}
+<link rel="stylesheet" type="text/css" href="{% static 'accounts/css/login.css' %}">
+
+{% endblock %}
+
+{% block content %}
+<div class="content-wrapper">
+
+  
+  <h3 class="title">Add Exchange</h3>
+  <form method="POST" action="{% url 'create_exchange_post'%}">
+    {% csrf_token %}
+    {{ exchange_form|crispy }}
+    <input type="submit" value="Add Exchange">
+  </form>
+
+  <h3 class="title">Add Exchange Api</h3>
+  <form method="POST" action="{% url 'create_exchange_api_post'%}">
+    <div id='form-errors'>{{ exchange_api_form_errors }}</div>
+    {% csrf_token %}
+    {{ exchange_api_form|crispy }}
+   
+    <input type="submit" value="Add Exchange Api">
+  </form>
+
+  <h3 class="title">Add Currency</h3>
+  <form method="POST" action="{% url 'create_currency_post'%}">
+    {% csrf_token %}
+    {{ currency_form|crispy }}
+    <input type="submit" value="Add Currency">
+  </form>
+
+  <h3 class="title">Add Pair</h3>
+  <form method="POST" action="{% url 'create_pair_post'%}">
+    {% csrf_token %}
+    {{ pair_form|crispy }}
+    <input type="submit" value="Add Pair">
+  </form> 
+
+  <h3 class="title">Add Trading Screen</h3>
+  <form method="POST" action="{% url 'create_trading_screen_post'%}">
+    {% csrf_token %}
+    {{ trading_screen_form|crispy }}
+    <input type="submit" value="Add Pair">
+  </form> 
+
+</div>
+{% endblock %}

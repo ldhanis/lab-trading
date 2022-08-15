@@ -19,7 +19,11 @@ class User(AbstractUser):
 	username = None
 
 	email                   = models.EmailField(_('email address'), unique=True)
-
+	
+	
+	is_staff 				= models.BooleanField(default=False)
+	is_superuser			= models.BooleanField(default=False)
+	is_active 				= models.BooleanField(default=True)
 	# Spoken language (FR/NL)
 	language_code           = models.CharField(max_length=5, default="fr")
 
@@ -39,7 +43,6 @@ class User(AbstractUser):
 
 	objects = UserManager()
 
-	
 
 	@property
 	def serialized(self):
