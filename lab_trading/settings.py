@@ -44,11 +44,14 @@ INSTALLED_APPS = [
 
     'account',
     'exchange',
+    'trading_platform',
 
     # External
 
     'crispy_forms',
 ]
+
+LOGIN_REDIRECT_URL = '/account/'
 
 ASGI_APPLICATION = 'lab_trading.asgi.application'
 
