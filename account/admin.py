@@ -5,4 +5,4 @@ from account.models import *
 admin.site.register(User)
 admin.site.register(TradingScreen)
 admin.site.register(Order)
-admin.site.register(CurrencyAmout)
+admin.site.register(CurrencyAmount)

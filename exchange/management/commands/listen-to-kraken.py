@@ -4,6 +4,7 @@ import time
 import requests
 from exchange.models import *
 from websocket import create_connection as dj_cc
+from exchange.handle_exchanges import *
 
 
 class Command(BaseCommand):
@@ -69,11 +70,8 @@ class Command(BaseCommand):
                 # print (result, '\n\n')
 
                 if (len(result) == 4):
-                    tickerResponse = {
-                        'close_price': result[1]['c'][0],
-                        'pair': result[len(result) - 1]
-                    }
-                    # print (tickerResponse)
+
+                    handle_price_update(result[len(result) - 1], 'krkn', result[1]['c'][0])
 
             except Exception as error:
                 print('Caught this error: ' + repr(error))

@@ -53,7 +53,7 @@ class User(AbstractUser):
 
 class TradingScreen(models.Model):
 
-	user 					= models.ManyToManyField(User)
+	user 					= models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True, related_name="trading_screens")
 	allowed_pairs 			= models.ManyToManyField(Pair)
 	exchange_api			= models.ForeignKey(ExchangeApi, on_delete=models.CASCADE)
 
@@ -68,8 +68,13 @@ class Order(models.Model):
 	trading_screen 			= models.ForeignKey(TradingScreen, on_delete=models.CASCADE)
 	created_on 				= models.DateTimeField(auto_now_add=True)
 
-class CurrencyAmout(models.Model):
+class CurrencyAmount(models.Model):
 
 	currency				= models.ForeignKey(Currency, on_delete=models.CASCADE)
-	amount					= models.FloatField()
+	amount					= models.FloatField(default=0)
 	user 					= models.ManyToManyField(User)
+
+	def get_value(self, currency_2_symbol):
+		if self.currency.symbol == currency_2_symbol:
+			return self.amount
+		return self.amount * self.currency.get_market_value(currency_2_symbol)

@@ -23,6 +23,9 @@ class Currency(models.Model):
     def __str__(self):
         return '{} {}'.format(self.get_exchange_display(), self.name)
 
+    def get_market_value(self, currency_2_symbol):
+        return Pair.objects.filter(currency_1=self).get(currency_2__symbol=currency_2_symbol).value
+
 
 class Pair(models.Model):
 
@@ -33,5 +36,8 @@ class Pair(models.Model):
     active = models.BooleanField(default=False)
     symbol = models.CharField(max_length=255, default="")
 
+    value = models.FloatField(default=0)
+    last_updated = models.DateTimeField(auto_now=True)
+
     def __str__(self):
-        return '{}/{} ({}{})'.format(self.currency_1.symbol, self.currency_2.symbol, self.currency_1.name, self.currency_2.name)
+        return '{}/{} ({}{}) - {}'.format(self.currency_1.symbol, self.currency_2.symbol, self.currency_1.name, self.currency_2.name, self.value)

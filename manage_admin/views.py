@@ -104,7 +104,7 @@ def CreateTradingScreen(request):
     trading_screen_form = TradingScreenForm()
     if request.method == 'POST':
 
-        trading_screen_form = trading_screen_form(request.POST)
+        trading_screen_form = TradingScreenForm(request.POST)
 
         if trading_screen_form.is_valid():
             trading_screen_form.save()
