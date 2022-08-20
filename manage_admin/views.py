@@ -1,18 +1,18 @@
 from django.shortcuts import render, HttpResponseRedirect
 from django.contrib.admin.views.decorators import staff_member_required
-
+from django.http import Http404
 from django.contrib import messages
 from django.utils.translation import gettext_lazy as _
+
 from exchange.forms import ExchangeApiForm, CurrencyForm, PairForm
+from exchange.models import ExchangeApi, Currency, Pair
 from account.forms import TradingScreenForm
+from account.models import TradingScreen
 
 
 @staff_member_required
 def Create(request):
-    trading_screen_form = TradingScreenForm()
-    exchange_api_form = ExchangeApiForm()
-    currency_form = CurrencyForm()
-    pair_form = PairForm()
+    trading_screen_form , exchange_api_form , currency_form , pair_form= Generate_Forms()
     context = {
         'trading_screen_form': trading_screen_form,
         'exchange_api_form': exchange_api_form,
@@ -25,7 +25,7 @@ def Create(request):
 @staff_member_required
 def CreateExchangeAPI(request):
 
-    exchange_api_form = ExchangeApiForm()
+    trading_screen_form , exchange_api_form , currency_form , pair_form= Generate_Forms()
     if request.method == 'POST':
 
         exchange_api_form = ExchangeApiForm(request.POST)
@@ -35,9 +35,6 @@ def CreateExchangeAPI(request):
             exchange_api_form.save()
             return HttpResponseRedirect('/thanks/')
 
-    trading_screen_form = TradingScreenForm()
-    currency_form = CurrencyForm()
-    pair_form = PairForm()
     context = {
         'trading_screen_form': trading_screen_form,
         'exchange_api_form': exchange_api_form,
@@ -50,7 +47,8 @@ def CreateExchangeAPI(request):
 @staff_member_required
 def CreateCurrency(request):
 
-    currency_form = CurrencyForm()
+    trading_screen_form , exchange_api_form , currency_form , pair_form = Generate_Forms()
+
     if request.method == 'POST':
 
         currency_form = CurrencyForm(request.POST)
@@ -60,9 +58,6 @@ def CreateCurrency(request):
             currency_form.save()
             return HttpResponseRedirect('/thanks/')
 
-    trading_screen_form = TradingScreenForm()
-    exchange_api_form = ExchangeApiForm()
-    pair_form = PairForm()
     context = {
         'trading_screen_form': trading_screen_form,
         'exchange_api_form': exchange_api_form,
@@ -75,7 +70,7 @@ def CreateCurrency(request):
 @staff_member_required
 def CreatePair(request):
 
-    pair_form = PairForm()
+    trading_screen_form , exchange_api_form , currency_form , pair_form= Generate_Forms()
     if request.method == 'POST':
 
         pair_form = PairForm(request.POST)
@@ -86,9 +81,6 @@ def CreatePair(request):
             pair_form.save()
             return HttpResponseRedirect('/thanks/')
 
-    trading_screen_form = TradingScreenForm()
-    exchange_api_form = ExchangeApiForm()
-    currency_form = CurrencyForm()
     context = {
         'trading_screen_form': trading_screen_form,
         'exchange_api_form': exchange_api_form,
@@ -101,7 +93,7 @@ def CreatePair(request):
 @staff_member_required
 def CreateTradingScreen(request):
 
-    trading_screen_form = TradingScreenForm()
+    trading_screen_form , exchange_api_form , currency_form , pair_form= Generate_Forms()
     if request.method == 'POST':
 
         trading_screen_form = TradingScreenForm(request.POST)
@@ -110,12 +102,38 @@ def CreateTradingScreen(request):
             trading_screen_form.save()
             return HttpResponseRedirect('/thanks/')
 
-    exchange_api_form = ExchangeApiForm()
-    currency_form = CurrencyForm()
-    pair_form = PairForm()
     context = {
         'exchange_api_form': exchange_api_form,
         'currency_form': currency_form,
         'pair_form': pair_form,
     }
     return render(request, "add_data.html", context)
+
+def Display(request, class_name):
+
+    allowed_class_name = ["exchange_api" , "currency" , "pair" , "trading_screen"]
+
+    str_to_class = {
+        "exchange_api"      : ExchangeApi,
+        "currency"          : Currency,
+        "pair"              : Pair, 
+        "trading_screen"    : TradingScreen,
+    }
+    if class_name in allowed_class_name:
+        query = str_to_class[class_name].objects.all()
+        context = {
+            class_name : query,
+        }
+        print(query.count)
+        return render(request , "display_data.html", context)
+    else :
+        raise Http404(class_name + " Does not exist")
+
+def Generate_Forms():
+
+    trading_screen_form = TradingScreenForm()
+    exchange_api_form = ExchangeApiForm()
+    currency_form = CurrencyForm()
+    pair_form = PairForm()
+
+    return trading_screen_form , exchange_api_form , currency_form , pair_form
