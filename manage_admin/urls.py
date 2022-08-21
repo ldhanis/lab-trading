@@ -13,8 +13,9 @@ urlpatterns = [
     # Display Data views
 
     path('display/<str:class_name>' , views.Display , name="display_all_data"),
-    path('display/<str:class_name>/<int:this_pk>' , views.DisplayOneData , name="display_one_data"),
+    path('display/pair/<int:this_pk>' , views.UpdatePair , name="display_one_pair"),
     
     # Update Data Views
     
+    path('update/pair/<int:this_pk>' , views.UpdatePair , name="update_pair"),
 ]

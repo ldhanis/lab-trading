@@ -3,6 +3,7 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.utils.translation import gettext_lazy as _
 from django.contrib.auth import authenticate, login, logout
+from django.contrib.admin.widgets import FilteredSelectMultiple
 
 from account.models import TradingScreen, User
 from exchange.models import Currency, ExchangeApi, Pair
@@ -66,17 +67,20 @@ class CustomUserCreationForm(UserCreationForm):
 
 
 class TradingScreenForm(forms.ModelForm):
-	user = forms.ModelMultipleChoiceField(
-        queryset=User.objects.all(),
-        widget=forms.CheckboxSelectMultiple(attrs={'class':'form-control'}),
-		label=_('Users'), label_suffix='*:', 
-    )
+	user = forms.ModelChoiceField(required = True, 
+	queryset = User.objects.all(), 
+	label=_('user'), label_suffix='*:', 
+	widget=forms.Select(attrs={'class':'form-control'}))
+
 	allowed_pairs = forms.ModelMultipleChoiceField(
         queryset=Pair.objects.all(),
-        widget=forms.CheckboxSelectMultiple(attrs={'class':'form-control'}),
-		label=_('Allowed Pairs'), label_suffix='*:', 
+        widget=FilteredSelectMultiple(verbose_name='Multis',
+		is_stacked=False, 
+		attrs={'class':'form-control'}),
+		label=_('Allowed Pairs'), 
+		label_suffix='*:',
     )
-	exchange_api 			= forms.ModelChoiceField(required = True, 
+	exchange_api 	= forms.ModelChoiceField(required = True, 
 	queryset = ExchangeApi.objects.all(), 
 	label=_('Exchange API'), label_suffix='*:', 
 	widget=forms.Select(attrs={'class':'form-control'}))

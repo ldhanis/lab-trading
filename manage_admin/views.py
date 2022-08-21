@@ -1,10 +1,10 @@
-from django.shortcuts import render, HttpResponseRedirect
+from django.shortcuts import render, HttpResponseRedirect, redirect
 from django.contrib.admin.views.decorators import staff_member_required
 from django.http import Http404
 from django.contrib import messages
 from django.utils.translation import gettext_lazy as _
 
-from exchange.forms import ExchangeApiForm, CurrencyForm, PairForm
+from exchange.forms import ExchangeApiForm, CurrencyForm, PairForm, UpdatePairForm
 from exchange.models import ExchangeApi, Currency, Pair
 from account.forms import TradingScreenForm
 from account.models import TradingScreen
@@ -75,9 +75,7 @@ def CreatePair(request):
 
         pair_form = PairForm(request.POST)
 
-        print("post")
         if pair_form.is_valid():
-            print("is_Valid")
             pair_form.save()
             return HttpResponseRedirect('/thanks/')
 
@@ -103,6 +101,7 @@ def CreateTradingScreen(request):
             return HttpResponseRedirect('/thanks/')
 
     context = {
+        'trading_screen_form': trading_screen_form,
         'exchange_api_form': exchange_api_form,
         'currency_form': currency_form,
         'pair_form': pair_form,
@@ -149,7 +148,39 @@ def DisplayOneData(request , class_name , this_pk ):
         raise Http404(class_name + " Does not exist")
     
 
+@staff_member_required
+def UpdatePair(request, this_pk):
 
+    current_pair = Pair.objects.get(pk=this_pk)
+    pair_form = UpdatePairForm(instance = current_pair , initial={'last_updated' : current_pair.last_updated})
+
+    context = {
+                "pair_form" : pair_form,
+                "current_class" : "pair",
+                "current_pk" : current_pair.pk,
+            }
+    if request.method == 'POST':
+        pair_form = UpdatePairForm(request.POST)
+        
+        if pair_form.is_valid():
+            current_pair.currency_1     = Currency.objects.get(pk = request.POST["currency_1"])
+            current_pair.currency_2     = Currency.objects.get(pk = request.POST["currency_2"])
+            if request.POST.get("active" , "off") == "on":
+                current_pair.active = True
+            else :
+                current_pair.active = False
+            current_pair.symbol         = request.POST["symbol"]
+            current_pair.save()
+            
+            pair_form = UpdatePairForm(instance = current_pair ,initial ={'last_updated' : current_pair.last_updated , 'value' : current_pair.value})
+            context["pair_form"] = pair_form
+            return render(request , "display_one_data.html" , context)
+
+        else : 
+            context["pair_form"] = pair_form
+            return render(request , "display_one_data.html" , context)
+
+    return render(request , "display_one_data.html" , context)
 
 
 

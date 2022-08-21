@@ -13,6 +13,13 @@
 <div class="container">
     <div class="row">
         <div class="col-sm-12">
+            {% if pair_form %}
+            <form method="POST" action="{% url 'update_pair' current_pk %}">
+                {% csrf_token %}
+                {{ pair_form|crispy }}
+                <input type="submit" value="Update Pair">
+            </form> 
+            {% endif %}
             {% if pair %}
                 <dl class="dl-horizontal">
                     <dt>Currency 1</dt>
