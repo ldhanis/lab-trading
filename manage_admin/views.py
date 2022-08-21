@@ -109,25 +109,49 @@ def CreateTradingScreen(request):
     }
     return render(request, "add_data.html", context)
 
+#DISPLAY VARIABLES 
+
+allowed_class_name = ["exchange_api" , "currency" , "pair" , "trading_screen"]
+
+str_to_class = {
+    "exchange_api"      : ExchangeApi,
+    "currency"          : Currency,
+    "pair"              : Pair, 
+    "trading_screen"    : TradingScreen,
+}
+
+@staff_member_required
 def Display(request, class_name):
 
-    allowed_class_name = ["exchange_api" , "currency" , "pair" , "trading_screen"]
-
-    str_to_class = {
-        "exchange_api"      : ExchangeApi,
-        "currency"          : Currency,
-        "pair"              : Pair, 
-        "trading_screen"    : TradingScreen,
-    }
     if class_name in allowed_class_name:
         query = str_to_class[class_name].objects.all()
         context = {
             class_name : query,
+            "current_class" : class_name,
         }
-        print(query.count)
         return render(request , "display_data.html", context)
     else :
         raise Http404(class_name + " Does not exist")
+
+
+@staff_member_required
+def DisplayOneData(request , class_name , this_pk ):
+
+    if class_name in allowed_class_name:
+        
+        current_data = str_to_class[class_name].objects.get(pk = this_pk)
+
+        context = {
+            class_name : current_data
+        }
+        return render(request , "display_one_data.html" , context)
+    else :
+        raise Http404(class_name + " Does not exist")
+    
+
+
+
+
 
 def Generate_Forms():
 

@@ -1,0 +1,67 @@
+{% load static %}
+{% load i18n %}
+{% load crispy_forms_tags %}
+
+{% block head %}
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0/css/bootstrap.css">
+<link rel="stylesheet" href="//cdn.datatables.net/1.10.16/css/dataTables.bootstrap4.min.css">
+
+{% endblock %}
+
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-sm-12">
+            {% if pair %}
+                <dl class="dl-horizontal">
+                    <dt>Currency 1</dt>
+                    <dd>{{pair.currency_1}}</dd>
+                    <dt>Currency 2</dt>
+                    <dd>{{pair.currency_2}}</dd>
+                    <dt>Is it Active</dt>
+                    <dd>{{pair.active}}</dd>
+                    <dt>Value</dt>
+                    <dd>{{pair.value}}</dd>
+                    <dt>Symbol</dt>
+                    <dd>{{pair.symbol}}</dd>
+                    <dt>last update</dt>
+                    <dd>{{pair.last_updated}}</dd>
+                </dl>
+            {% endif %}
+
+            {% if exchange_api %}
+                <dl class="dl-horizontal">
+                    <dt>Name</dt>
+                    <dd>{{exchange_api.exchange}}</dd>
+                    <dt>Authentication Key</dt>
+                    <dd>{{exchange_api.authentication}}</dd>
+                </dl>
+            {% endif %}
+
+            {% if currency %}
+                <dl class="dl-horizontal">
+                    <dt>Exchange</dt>
+                    <dd>{{currency.exchange}}</dd>
+                    <dt>Name</dt>
+                    <dd>{{currency.name}}</dd>
+                    <dt>Symbol</dt>
+                    <dd>{{currency.symbol}}</dd>
+                </dl>
+            {% endif %}
+
+            {% if trading_screen %}
+                <dl class="dl-horizontal">
+                    <dt>Users</dt>
+                    <dd>{{trading_screen.user}}</dd>
+                    <dt>Allowed Pairs</dt>
+                    <dd>{{trading_screen.allowed_pairs}}</dd>
+                    <dt>Exchange API</dt>
+                    <dd>{{trading_screen.exchange_api}}</dd>
+                </dl>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+{% endblock %}

@@ -26,7 +26,7 @@
           </thead>
           <tbody>
             {% for object in pair %}
-            <tr>
+            <tr onclick="location.href='{% url 'display_one_data' current_class object.pk  %}'">
               <th>{{object.currency_1}}</th>
               <th>{{object.currency_2}}</th>
               <th>{{object.symbol}}</th>
@@ -46,7 +46,7 @@
           </thead>
           <tbody>
             {% for object in exchange_api %}
-            <tr>
+            <tr onclick="location.href='{% url 'display_one_data' current_class object.pk  %}'">
               <th>{{object.exchange}}</th>
               <th>{{object.authentication}}</th>
             </tr>
@@ -65,7 +65,7 @@
           </thead>
           <tbody>
             {% for object in currency %}
-            <tr>
+            <tr onclick="location.href='{% url 'display_one_data' current_class object.pk  %}'">
               <th>{{object.exchange}}</th>
               <th>{{object.name}}</th>
               <th>{{object.symbol}}</th>
@@ -85,7 +85,7 @@
           </thead>
           <tbody>
             {% for object in trading_screen %}
-            <tr>
+            <tr onclick="location.href='{% url 'display_one_data' current_class object.pk  %}'">
               <th>{{object.user}}</th>
               <th>{{object.allowed_pairs}}</th>
               <th>{{object.exchange_api}}</th>

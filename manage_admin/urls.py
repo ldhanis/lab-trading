@@ -12,7 +12,8 @@ urlpatterns = [
     path('create/trading_screen', views.CreateTradingScreen, name="create_trading_screen_post"),
     # Display Data views
 
-    path('display/<str:class_name>' , views.Display , name="display_all_data")
+    path('display/<str:class_name>' , views.Display , name="display_all_data"),
+    path('display/<str:class_name>/<int:this_pk>' , views.DisplayOneData , name="display_one_data"),
     
     # Update Data Views
     
