@@ -7,8 +7,16 @@ from django.utils.translation import gettext_lazy as _
 from exchange.forms import ExchangeApiForm, CurrencyForm, PairForm, UpdatePairForm
 from exchange.models import ExchangeApi, Currency, Pair
 from account.forms import TradingScreenForm
-from account.models import TradingScreen
+from account.models import TradingScreen, User
 
+from django.db.models import Sum
+
+@staff_member_required
+def DisplayOverview(request):
+
+    users = User.objects.annotate(test=Sum('currencyamount__amount'))
+    print(users[0].test)
+    return render(request, "overview.html")
 
 @staff_member_required
 def Create(request):
@@ -181,8 +189,6 @@ def UpdatePair(request, this_pk):
             return render(request , "display_one_data.html" , context)
 
     return render(request , "display_one_data.html" , context)
-
-
 
 def Generate_Forms():
 

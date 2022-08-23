@@ -78,3 +78,4 @@ class CurrencyAmount(models.Model):
 		if self.currency.symbol == currency_2_symbol:
 			return self.amount
 		return self.amount * self.currency.get_market_value(currency_2_symbol)
+

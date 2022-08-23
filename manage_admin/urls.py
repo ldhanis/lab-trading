@@ -12,6 +12,7 @@ urlpatterns = [
     path('create/trading_screen', views.CreateTradingScreen, name="create_trading_screen_post"),
     # Display Data views
 
+    path('display/', views.DisplayOverview, name="display_overview"),
     path('display/<str:class_name>' , views.Display , name="display_all_data"),
     path('display/pair/<int:this_pk>' , views.UpdatePair , name="display_one_pair"),
     

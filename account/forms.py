@@ -1,5 +1,4 @@
 from django import forms
-
 from django.contrib.auth.forms import UserCreationForm
 from django.utils.translation import gettext_lazy as _
 from django.contrib.auth import authenticate, login, logout
@@ -7,6 +6,8 @@ from django.contrib.admin.widgets import FilteredSelectMultiple
 
 from account.models import TradingScreen, User
 from exchange.models import Currency, ExchangeApi, Pair
+
+from django_select2 import forms as s2forms
 
 class DateInput(forms.DateInput):
 	input_type = "date"
@@ -64,7 +65,20 @@ class CustomUserCreationForm(UserCreationForm):
 		model = User
 		fields = ["email", "first_name", "last_name", "password1", "password2"]
 	
+class BaseAutocompleteSelect(s2forms.ModelSelect2Widget):
+    class Media:
+        js = ("admin/js/vendor/jquery/jquery.min.js",)
 
+    def __init__(self, **kwargs):
+        super().__init__(kwargs)
+        self.attrs = {"style": "width: 300px"}
+
+    def build_attrs(self, base_attrs, extra_attrs=None):
+        base_attrs = super().build_attrs(base_attrs, extra_attrs)
+        base_attrs.update(
+            {"data-minimum-input-length": 0, "data-placeholder": self.empty_label}
+        )
+        return base_attrs
 
 class TradingScreenForm(forms.ModelForm):
 	user = forms.ModelChoiceField(required = True, 
@@ -72,7 +86,7 @@ class TradingScreenForm(forms.ModelForm):
 	label=_('user'), label_suffix='*:', 
 	widget=forms.Select(attrs={'class':'form-control'}))
 
-	allowed_pairs = forms.ModelMultipleChoiceField(
+	allowed_pairs = forms.ModelChoiceField(
         queryset=Pair.objects.all(),
         widget=FilteredSelectMultiple(verbose_name='Multis',
 		is_stacked=False, 
@@ -84,6 +98,7 @@ class TradingScreenForm(forms.ModelForm):
 	queryset = ExchangeApi.objects.all(), 
 	label=_('Exchange API'), label_suffix='*:', 
 	widget=forms.Select(attrs={'class':'form-control'}))
+
 	
 	class Meta:
 		model = TradingScreen

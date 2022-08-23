@@ -1,15 +1,26 @@
+{% extends 'layouts/base.html' %}
+
 {% load static %}
 {% load i18n %}
 {% load crispy_forms_tags %}
 
 {% block head %}
 <link rel="stylesheet" type="text/css" href="{% static 'accounts/css/login.css' %}">
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
 {% endblock %}
 
-{% block content %}
+{% block body %}
 <div class="content-wrapper">
 
+  <h3 class="title">Add Trading Screen</h3>
+  <form method="POST" action="{% url 'create_trading_screen_post'%}">
+    {% csrf_token %}
+    {{ trading_screen_form|crispy }}
+    <input type="submit" value="Add Pair">
+  </form> 
+  
   <h3 class="title">Add Exchange Api</h3>
   <form method="POST" action="{% url 'create_exchange_api_post'%}">
     <div id='form-errors'>{{ exchange_api_form_errors }}</div>
@@ -33,12 +44,6 @@
     <input type="submit" value="Add Pair">
   </form> 
 
-  <h3 class="title">Add Trading Screen</h3>
-  <form method="POST" action="{% url 'create_trading_screen_post'%}">
-    {% csrf_token %}
-    {{ trading_screen_form|crispy }}
-    <input type="submit" value="Add Pair">
-  </form> 
 
 </div>
-{% endblock %}
+{% endblock body %}
