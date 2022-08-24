@@ -66,8 +66,10 @@ class Order(models.Model):
 	type_of_order 			= models.CharField(max_length=255) 
 	pair					= models.ForeignKey(Pair, on_delete=models.CASCADE)
 	amount 					= models.FloatField(default=0)
+	# value_in_currency_2
 	trading_screen 			= models.ForeignKey(TradingScreen, on_delete=models.CASCADE)
 	created_on 				= models.DateTimeField(auto_now_add=True)
+
 
 class CurrencyAmount(models.Model):
 

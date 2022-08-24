@@ -36,23 +36,11 @@ class Pair(models.Model):
     active = models.BooleanField(default=False)
     symbol = models.CharField(max_length=255, default="")
     last_updated = models.DateTimeField(auto_now=True)
+    value  = models.FloatField(default=0)
 
     def __str__(self):
         return '{}/{} ({}{}) - {}'.format(self.currency_1.symbol, self.currency_2.symbol, self.currency_1.name, self.currency_2.name, self.value)
 
-    @property
-    def value(self):
-        if self.values.last():
-            return self.values.last().value
-        return 0
-
     def update_value(self, value):
-        pair_value = PairValue()
-        pair_value.value = value
-        pair_value.pair = self
-        pair_value.save()
-
-class PairValue(models.Model):
-    pair = models.ForeignKey(Pair, on_delete=models.CASCADE, related_name="values")
-    value = models.FloatField(default=0)
-    last_updated = models.DateTimeField(auto_now=True)
+        self.value = value
+        self.save()

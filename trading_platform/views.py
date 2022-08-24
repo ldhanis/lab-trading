@@ -22,7 +22,7 @@ def user_dashboard(request, trading_screen_id):
     for currency_amount in trading_screen.currency_amounts.all():
         portfolio_usd_value += currency_amount.get_value('USD')
 
-    context = {'pairs': trading_screen.allowed_pairs.filter(active=True).filter(currency_2__symbol='USD').annotate(latest_value=Max('values__value')).order_by('-latest_value'),
+    context = {'pairs': trading_screen.allowed_pairs.filter(active=True).filter(currency_2__symbol='USD').order_by('-value'),
                'portfolio_usd_value': portfolio_usd_value,
                'trading_screen': trading_screen
                }
@@ -85,11 +85,13 @@ def create_buy_order(request, trading_screen_id, currency_1_symbol, currency_2_s
     currency_1 = Currency.objects.get(symbol=currency_1_symbol)
     currency_2 = Currency.objects.get(symbol=currency_2_symbol)
 
+    amount_1 = trading_screen.currency_amounts.filter(
+        currency=currency_1).last()
+    amount_2 = trading_screen.currency_amounts.filter(
+        currency=currency_2).last()
 
-    amount_1 = trading_screen.currency_amounts.filter(currency=currency_1).last()
-    amount_2 = trading_screen.currency_amounts.filter(currency=currency_2).last()
-
-    pair = trading_screen.allowed_pairs.filter(currency_1=currency_1).filter(currency_2=currency_2).filter(active=True).last()
+    pair = trading_screen.allowed_pairs.filter(currency_1=currency_1).filter(
+        currency_2=currency_2).filter(active=True).last()
 
     if request.method == "POST" and pair:
         amount = float(request.POST.get('amount'))
@@ -109,16 +111,15 @@ def create_buy_order(request, trading_screen_id, currency_1_symbol, currency_2_s
 
             # Change amounts
             # Do not forget to add fees
-            
+
             amount_2.amount = amount_2.amount - amount
             amount_2.save()
 
-            print (currency_2)
-            print (currency_1.symbol)
+            print(currency_2)
+            print(currency_1.symbol)
 
-            amount_1.amount = amount_1.amount + 1 / currency_1.get_market_value(currency_2.symbol) * amount
+            amount_1.amount = amount_1.amount + 1 / \
+                currency_1.get_market_value(currency_2.symbol) * amount
             amount_1.save()
-
-
 
     return redirect('trading_dashboard', trading_screen_id=trading_screen_id, currency_1_symbol=currency_1_symbol, currency_2_symbol=currency_2_symbol)
