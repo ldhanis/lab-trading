@@ -1,0 +1,16 @@
+{% extends 'layouts/base.html' %}
+
+{% load static %}
+{% load i18n %}
+{% load crispy_forms_tags %}
+
+
+{% block body %}
+
+<h2>Users</h2>
+{% for user in users %}
+<p>{{user.first_name}}  {{user.test}}</p>
+
+{% endfor %}
+
+{% endblock %}

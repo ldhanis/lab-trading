@@ -15,8 +15,11 @@ from django.db.models import Sum
 def DisplayOverview(request):
 
     users = User.objects.annotate(test=Sum('currencyamount__amount'))
-    print(users[0].test)
-    return render(request, "overview.html")
+    
+    context = {
+        'users' : users
+    }
+    return render(request, "overview.html", context)
 
 @staff_member_required
 def Create(request):
