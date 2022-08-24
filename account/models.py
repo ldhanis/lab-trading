@@ -65,6 +65,7 @@ class Order(models.Model):
 
 	type_of_order 			= models.CharField(max_length=255) 
 	pair					= models.ForeignKey(Pair, on_delete=models.CASCADE)
+	amount 					= models.FloatField(default=0)
 	trading_screen 			= models.ForeignKey(TradingScreen, on_delete=models.CASCADE)
 	created_on 				= models.DateTimeField(auto_now_add=True)
 
@@ -73,9 +74,9 @@ class CurrencyAmount(models.Model):
 	currency				= models.ForeignKey(Currency, on_delete=models.CASCADE)
 	amount					= models.FloatField(default=0)
 	user 					= models.ManyToManyField(User)
+	trading_screen			= models.ForeignKey(TradingScreen, null=True, on_delete=models.CASCADE, related_name="currency_amounts")
 
 	def get_value(self, currency_2_symbol):
 		if self.currency.symbol == currency_2_symbol:
 			return self.amount
 		return self.amount * self.currency.get_market_value(currency_2_symbol)
-

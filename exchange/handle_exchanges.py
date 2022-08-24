@@ -10,6 +10,6 @@ def handle_price_update(pair_symbol, exchange, close_price):
 
     pair = Pair.objects.filter(currency_1=currency_1).get(currency_2=currency_2)
 
-    pair.value = close_price
+    pair.update_value(close_price)
     pair.save()
     print (pair, close_price)

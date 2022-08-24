@@ -35,10 +35,21 @@
 
         <div class="col p-2">
             <div class="card">
-                <h1>Create an order</h1>
                 <h2>You own {{amount_1.amount}} {{amount_1.currency}}</h2>
                 <h2>You own {{amount_2.amount}} {{amount_2.currency}}</h2>
             </div>
+        
+            <div class="card mt-2">
+                <h1>Create an order</h1>
+                <h2>Buy {{amount_1.currency }}</h2>
+                <form method="POST" action="{% url 'buy_order' trading_screen.id currency_1.symbol currency_2.symbol 'buy' %}">
+                    {% csrf_token %}
+                    <input type="number" required="true" name="amount" placeholder="amount in {{amount_2.currency}}" />
+                    <input type="number" name="limit" placeholder="limit price in {{amount_1.currency}}" />
+                    <input type="submit">
+                </form>
+            </div>  
+        
         </div>
     </div>
 {% endblock body %}

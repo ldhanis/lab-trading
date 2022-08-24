@@ -14,7 +14,7 @@
             <ul>
                 {% for pair in pairs %}
                     <li>
-                        <a href="{% url 'trading_dashboard' pair.currency_1.symbol pair.currency_2.symbol %}">{{ pair }}</a>
+                        <a href="{% url 'trading_dashboard' trading_screen.id pair.currency_1.symbol pair.currency_2.symbol %}">{{ pair }}</a>
                     </li>
                 {% endfor %}
             </ul>
