@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     # External
 
     'crispy_forms',
+    'chartjs',
 ]
 
 LOGIN_REDIRECT_URL = '/account/'
