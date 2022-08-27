@@ -1,5 +1,6 @@
 from tkinter.messagebox import RETRY
 from django.db import models
+from exchange.exchangeApi import krakenApi, noApi
 
 EXCHANGE_CHOICES = [
     ('none', 'No Api'),
@@ -12,6 +13,13 @@ class ExchangeApi(models.Model):
     exchange = models.CharField(
         max_length=4, choices=EXCHANGE_CHOICES, default='none')
     authentication = models.JSONField()
+
+    def get_class(self):
+        if self.exchange == 'none':
+            return noApi.NoAPI(self.authentication)
+        elif self.exchange == 'krkn':
+            return krakenApi.KrakenAPI(self.authentication)
+
 
 
 class Currency(models.Model):
@@ -44,3 +52,7 @@ class Pair(models.Model):
     def update_value(self, value):
         self.value = value
         self.save()
+
+    @property
+    def krkn_symbol(self):
+        return '{}{}'.format(self.currency_1.symbol, self.currency_2.symbol)

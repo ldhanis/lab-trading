@@ -2,12 +2,18 @@ from exchange.models import *
 from account.models import *
 
 
-class NoApi():
+class NoAPI():
 
-    # Returns True everytime
+    auth = False
 
-    def authenticate(auth):
-        return True
+    # standard constructor
+    def __init__(self, auth_data):
+        self.auth = True
+
+    # Returns the value of self.auth
+
+    def authenticate(self):
+        return self.auth
 
     # Order functions will return
 

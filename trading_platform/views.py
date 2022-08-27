@@ -20,9 +20,9 @@ def user_dashboard(request, trading_screen_id):
     portfolio_usd_value = 0
 
     for currency_amount in trading_screen.currency_amounts.all():
-        portfolio_usd_value += currency_amount.get_value('USD')
+        portfolio_usd_value += currency_amount.get_value('ZUSD')
 
-    context = {'pairs': trading_screen.allowed_pairs.filter(active=True).filter(currency_2__symbol='USD').order_by('-value'),
+    context = {'pairs': trading_screen.allowed_pairs.filter(active=True).filter(currency_2__symbol='ZUSD').order_by('-value'),
                'portfolio_usd_value': portfolio_usd_value,
                'trading_screen': trading_screen
                }
@@ -70,7 +70,7 @@ def trading_dashboard(request, trading_screen_id, currency_1_symbol, currency_2_
     print(amount_1, amount_2)
 
     context = {
-        'pair_symbol': '{}{}'.format(currency_1_symbol, currency_2_symbol),
+        'pair_symbol': '{}{}'.format(currency_1.name, currency_2.name),
         'amount_1': amount_1,
         'amount_2': amount_2,
         'currency_1': currency_1,
@@ -79,47 +79,22 @@ def trading_dashboard(request, trading_screen_id, currency_1_symbol, currency_2_
     return render(request, 'trading_screen.html', context)
 
 
-def create_buy_order(request, trading_screen_id, currency_1_symbol, currency_2_symbol, direction='buy'):
+def create_standard_order(request, trading_screen_id, currency_1_symbol, currency_2_symbol, direction='buy'):
 
     trading_screen = request.user.trading_screens.get(id=trading_screen_id)
     currency_1 = Currency.objects.get(symbol=currency_1_symbol)
     currency_2 = Currency.objects.get(symbol=currency_2_symbol)
 
-    amount_1 = trading_screen.currency_amounts.filter(
+    currency_1_value = trading_screen.currency_amounts.filter(
         currency=currency_1).last()
-    amount_2 = trading_screen.currency_amounts.filter(
+    currency_2_value = trading_screen.currency_amounts.filter(
         currency=currency_2).last()
 
-    pair = trading_screen.allowed_pairs.filter(currency_1=currency_1).filter(
-        currency_2=currency_2).filter(active=True).last()
 
-    if request.method == "POST" and pair:
-        amount = float(request.POST.get('amount'))
-        limit = request.POST.get('limit')
+    if request.method == 'POST':
+        amount = float(request.POST.get('amount')) if len(request.POST.get('amount')) > 0 else 0
+        limit = float(request.POST.get('limit')) if len(request.POST.get('limit')) > 0 else 0
 
-        # ignore the limit at the moment
-        # Check if enough of currency 2 to buy currency 1
-
-        if amount_2.amount >= amount:
-            # Create order
-            new_order = Order()
-            new_order.type_of_order = direction
-            new_order.pair = pair
-            new_order.trading_screen = trading_screen
-            new_order.amount = amount
-            new_order.save()
-
-            # Change amounts
-            # Do not forget to add fees
-
-            amount_2.amount = amount_2.amount - amount
-            amount_2.save()
-
-            print(currency_2)
-            print(currency_1.symbol)
-
-            amount_1.amount = amount_1.amount + 1 / \
-                currency_1.get_market_value(currency_2.symbol) * amount
-            amount_1.save()
+        trading_screen.create_order('market' if not limit else 'limit', direction, currency_1_value, currency_2_value, amount,limit)
 
     return redirect('trading_dashboard', trading_screen_id=trading_screen_id, currency_1_symbol=currency_1_symbol, currency_2_symbol=currency_2_symbol)

@@ -23,8 +23,8 @@ class Command(BaseCommand):
             # Checking if asset exists in database
             asset, created = Currency.objects.get_or_create(
                 exchange='krkn',
-                symbol=asset_data['altname'],
-                name=key
+                symbol=key,
+                name=asset_data['altname']
             )
 
             print('created: ' if created else 'got: ', asset)
@@ -42,8 +42,8 @@ class Command(BaseCommand):
 
             # Checking if pair exists in database
             pair_names = ws_name.split('/')
-            currency_1 = available_assets.get(symbol=pair_names[0])
-            currency_2 = available_assets.get(symbol=pair_names[1])
+            currency_1 = available_assets.get(name=pair_names[0])
+            currency_2 = available_assets.get(name=pair_names[1])
 
             pair, created = Pair.objects.get_or_create(
                 currency_1=currency_1,
