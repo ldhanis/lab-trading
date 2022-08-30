@@ -56,3 +56,7 @@ class Pair(models.Model):
     @property
     def krkn_symbol(self):
         return '{}{}'.format(self.currency_1.symbol, self.currency_2.symbol)
+
+    @property
+    def krkn_name(self):
+        return f'{self.currency_1.name}{self.currency_2.name}'
