@@ -12,7 +12,7 @@ def get_pair_price_evolution(pair, since=(datetime.now() - timedelta(days=7)), i
         for ohlc in resp['result'][pair.krkn_name]:
             response_list.append({
                 'time' : datetime.fromtimestamp(ohlc[0]),
-                'close' : ohlc[4]
+                'close' : float(ohlc[4])
             })
     
     print (response_list)
