@@ -51,6 +51,7 @@ INSTALLED_APPS = [
 
     'crispy_forms',
     'chartjs',
+    'django_tables2'
 ]
 
 LOGIN_REDIRECT_URL = '/account/'
@@ -136,6 +137,10 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 
+STATICFILES_DIRS = [
+    BASE_DIR / "static",
+]
+DJANGO_TABLES2_TEMPLATE = "django_tables2/bootstrap4.html"
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
 

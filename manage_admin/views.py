@@ -7,16 +7,26 @@ from django.utils.translation import gettext_lazy as _
 from exchange.forms import ExchangeApiForm, CurrencyForm, PairForm, UpdatePairForm
 from exchange.models import ExchangeApi, Currency, Pair
 from account.forms import TradingScreenForm
-from account.models import TradingScreen, User
+from account.models import CurrencyAmount, TradingScreen, User, Order
+from account.tables import OrderTable
 
-from django.db.models import Sum
+from manage_admin.forms import *
 
-@staff_member_required
 def DisplayOverview(request):
 
-    users = User.objects.annotate(test=Sum('currencyamount__amount'))
-    print(users[0].test)
-    return render(request, "overview.html")
+    currencies = CurrencyAmount.objects.filter(trading_screen = TradingScreen.objects.get(pk=1))
+    trade  = TradingScreen.objects.get(pk=1)
+    new_currencies = trade.currency_amounts.all()
+    
+    date_form = DateForm()
+    order_table = OrderTable(Order.objects.all())
+    order_table.paginate(page=request.GET.get("page", 1), per_page=10)
+
+    context = {
+        'date_form' : date_form, 
+        'order_table' : order_table,
+    }
+    return render(request, "overview.html" , context)
 
 @staff_member_required
 def Create(request):

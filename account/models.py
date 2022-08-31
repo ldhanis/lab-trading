@@ -126,19 +126,19 @@ class Order(models.Model):
     type_of_order = models.CharField(max_length=255)
     direction = models.CharField(max_length=255, default="buy")
     pair = models.ForeignKey(Pair, on_delete=models.CASCADE)
-    amount = models.FloatField(default=0)
+    amount = models.FloatField(default=0)  #amount of first pairs
     fees = models.FloatField(default=0)
     trading_screen = models.ForeignKey(TradingScreen, on_delete=models.CASCADE)
     created_on = models.DateTimeField(auto_now_add=True)
     fullfilled_on = models.DateTimeField(blank=True, null=True)
     external_id = models.TextField(blank=True, null=True)
     success = models.BooleanField(default=False)
+    updated_balance = models.FloatField(default=0) # updated quantity of the first currency of this pair
 
 class CurrencyAmount(models.Model):
 
     currency = models.ForeignKey(Currency, on_delete=models.CASCADE)
     amount = models.FloatField(default=0)
-    user = models.ManyToManyField(User)
     trading_screen = models.ForeignKey(
         TradingScreen, null=True, on_delete=models.CASCADE, related_name="currency_amounts")
 

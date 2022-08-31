@@ -1,0 +1,23 @@
+a{
+    text-decoration: none;
+    color:#141755;
+}
+.statistic-element{
+    height:40.35vh;
+    width:100%
+    
+}
+canvas{
+    position: absolute;
+}
+#myChart2{
+}
+.chart2-wrapper{
+    width:40.35vh;
+    margin: auto;
+}
+.table-container{
+    height: 40.35vh;
+    width: 100%;
+
+}

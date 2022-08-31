@@ -33,7 +33,12 @@ class Currency(models.Model):
         return '{} {}'.format(self.get_exchange_display(), self.name)
 
     def get_market_value(self, currency_2_symbol):
-        return Pair.objects.filter(currency_1=self).get(currency_2__symbol=currency_2_symbol).value
+        try:
+            value = Pair.objects.filter(currency_1=self).get(currency_2__symbol=currency_2_symbol).value
+        except:
+            value = 0
+        return value
+
 
 class Pair(models.Model):
 
