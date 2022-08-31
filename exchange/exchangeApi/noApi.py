@@ -1,6 +1,6 @@
 from exchange.models import * 
 from account.models import *
-
+import datetime
 
 class NoAPI():
 
@@ -18,17 +18,20 @@ class NoAPI():
     # Order functions will return
 
     # Buy or sell according to the market price at the order completion time
-    def market_order(self, user, pair, direction, volume):
+    def market_order(self, order_obj):
 
-        # Create a Buy order
-
-        pass
+        order_obj.success = True
+        order_obj.external_id = 'noApi'
+        order_obj.fullfilled_on = datetime.datetime.now()
+        order_obj.save()
 
     # Buy or sell according to a "limit" price
     # If we place a buy order and the market hits the limit price or below, the order is completed
     # If we place a sell order and the market hits the limit price or above, the order is completed
-    def limit_order(self, user, pair, direction, volume, limit):
-        pass
+    def market_order(self, order_obj):
+        order_obj.success = True
+        order_obj.external_id = 'noApi'
+        order_obj.save()
 
     #
     def stop_loss(self, user, pair, volume, trigger_price):

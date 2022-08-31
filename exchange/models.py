@@ -50,12 +50,14 @@ class Pair(models.Model):
     symbol = models.CharField(max_length=255, default="")
     last_updated = models.DateTimeField(auto_now=True)
     value  = models.FloatField(default=0)
+    previous_value = models.FloatField(default=0)
 
     def __str__(self):
         return '{}/{} ({}{}) - {}'.format(self.currency_1.symbol, self.currency_2.symbol, self.currency_1.name, self.currency_2.name, self.value)
 
     def update_value(self, value):
-        self.value = value
+        self.previous_value = float(self.value)
+        self.value = float(value)
         self.save()
 
     @property
