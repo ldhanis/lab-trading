@@ -95,7 +95,7 @@ class TradingScreen(models.Model):
             except Exception as e:
                 print('\n\n----------------------->', symbol, balance, e)
 
-    def create_order(self, order_type, direction, currency_1_value, currency_2_value, amount_currency_1, limit_price_currency_1=0, trigger_price_currency_1=0):
+    def create_order(self, order_type, direction, currency_1_value, currency_2_value, amount_currency_1, limit_price_currency_1=None, trigger_price_currency_1=None):
         api_response = False
         trading_api = self.exchange_api.get_class()
 
@@ -107,17 +107,26 @@ class TradingScreen(models.Model):
         order_obj.type_of_order = order_type
         order_obj.pair = pair
         order_obj.amount = amount_currency_1
+        order_obj.limit = limit_price_currency_1
+        order_obj.trigger_price = trigger_price_currency_1
         order_obj.trading_screen = self
-        order_obj.last_balance = CurrencyAmount.filter(currency = pair.currency_1).last()
+        #order_obj.last_balance = CurrencyAmount.filter(currency = pair.currency_1).last()
+        order_obj.direction = direction
         order_obj.save()
 
         if order_type == 'market':
             # Asking for a market order
             # Checking if trader has enough currency value
             if ((direction == 'buy' and (pair.value * amount_currency_1) <= currency_2_value.amount) or (direction == 'sell' and amount_currency_1 <= currency_1_value.amount)):
-                trading_api.market_order(order_obj, pair, direction, amount_currency_1)
+                trading_api.market_order(order_obj)
             else:
                 raise NotEnoughBalance('Not enough Balance')
+
+        if order_type == 'limit':
+            # Asking for a limit order
+            # Chceking if trader has enough currency value
+            if ((direction == 'buy' and (pair.value * amount_currency_1) <= currency_2_value.amount) or (direction == 'sell' and amount_currency_1 <= currency_1_value.amount)):
+                trading_api.limit_order(order_obj)
 
         self.sync_currency_amounts()
 
@@ -128,6 +137,8 @@ class Order(models.Model):
     direction = models.CharField(max_length=255, default="buy")
     pair = models.ForeignKey(Pair, on_delete=models.CASCADE)
     amount = models.FloatField(default=0)  #amount of first pairs
+    limit = models.FloatField(null=True, blank=True)
+    trigger_price = models.FloatField(null=True, blank=True)
     fees = models.FloatField(default=0)
     trading_screen = models.ForeignKey(TradingScreen, on_delete=models.CASCADE)
     created_on = models.DateTimeField(auto_now_add=True)

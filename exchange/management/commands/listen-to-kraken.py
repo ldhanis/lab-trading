@@ -27,7 +27,6 @@ class Command(BaseCommand):
                 name=asset_data['altname']
             )
 
-            print('created: ' if created else 'got: ', asset)
 
         available_assets = Currency.objects.filter(exchange='krkn')
 
@@ -50,7 +49,6 @@ class Command(BaseCommand):
                 currency_2=currency_2
             )
 
-            print(pair)
 
         # Subscribing to all pairs
 
@@ -67,7 +65,6 @@ class Command(BaseCommand):
 
                 # Checking if our response if of ticker type
 
-                # print (result, '\n\n')
 
                 if (len(result) == 4):
 

@@ -8,11 +8,15 @@ def get_pair_price_evolution(pair, since=(datetime.now() - timedelta(days=7)), i
     resp = requests.get(f'https://api.kraken.com/0/public/OHLC?pair={pair.krkn_name}&since={since}&interval={interval_in_minutes}')
     resp = resp.json()
     response_list = []
+    print (resp)
     if not len(resp['error']):
-        for ohlc in resp['result'][pair.krkn_name]:
-            response_list.append({
-                'time' : datetime.fromtimestamp(ohlc[0]),
-                'close' : float(ohlc[4])
-            })
+        
+        for key, value in resp['result'].items():
+            for ohlc in value:
+                response_list.append({
+                    'time' : datetime.fromtimestamp(ohlc[0]),
+                    'close' : float(ohlc[4])
+                })
+            break
     
-    print (response_list)
+    return (response_list)

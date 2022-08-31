@@ -6,6 +6,7 @@ import time
 import os
 import requests
 import json
+import datetime
 
 # Global vars
 api_url = "https://api.kraken.com"
@@ -63,7 +64,11 @@ class KrakenAPI():
 
         return (ret_arr)
         
-    def market_order(self, order_obj, pair, direction, volume):
+    def market_order(self, order_obj):
+
+        pair = order_obj.pair
+        direction = order_obj.direction
+        volume = order_obj.amount
 
         print ('--------------------------------------------\n',pair,'\n', direction,'\n', volume, '\n--------------------------------------------')
 
@@ -73,6 +78,34 @@ class KrakenAPI():
             "type" : direction,
             "volume" : float(f'{volume:.20f}'),
             "pair" : pair.krkn_symbol
+        }
+
+        resp = kraken_request('/0/private/AddOrder', rec_data, self.api_key, self.api_sec)
+        resp = resp.json()
+
+        print (resp)
+
+        if len(resp['error']) == 0:
+            order_obj.success = True
+            order_obj.external_id = resp['result']['txid'][0]
+            order_obj.fullfilled_on = datetime.datetime.now()
+            order_obj.save()
+
+    def limit_order(self, order_obj):
+
+        pair = order_obj.pair
+        direction = order_obj.direction
+        volume = order_obj.amount
+
+        print ('--------------------------------------------\n',pair,'\n', direction,'\n', volume, '\n--------------------------------------------')
+
+        rec_data = {
+            "nonce": str(int(1000*time.time())),
+            "ordertype" : "market",
+            "type" : direction,
+            "volume" : float(f'{volume:.20f}'),
+            "pair" : pair.krkn_symbol,
+            "price" : order_obj.limit
         }
 
         resp = kraken_request('/0/private/AddOrder', rec_data, self.api_key, self.api_sec)
