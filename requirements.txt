@@ -3,7 +3,7 @@ attrs==22.1.0
 autobahn==22.7.1
 Automat==20.2.0
 autopep8==1.7.0
-backports.zoneinfo==0.2.1
+#backports.zoneinfo==0.2.1
 certifi==2022.6.15
 cffi==1.15.1
 channels==3.0.5
@@ -19,6 +19,7 @@ django-appconf==1.0.5
 django-crispy-forms==1.14.0
 django-select2==7.10.0
 django-chartjs
+django_tables2
 djlint==1.10.0
 EditorConfig==0.12.3
 gevent==21.12.0

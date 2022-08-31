@@ -12,20 +12,63 @@ from account.tables import OrderTable
 
 from manage_admin.forms import *
 
-def DisplayOverview(request):
+from lab_trading import misc_kraken
+from datetime import timedelta
+import datetime as date
 
+def DisplayOrders(request, trading_screen):
 
-    currencies = CurrencyAmount.objects.filter(trading_screen = TradingScreen.objects.get(pk=1))
-    trade  = TradingScreen.objects.get(pk=1)
-    new_currencies = trade.currency_amounts.all()
     
+    order_table = OrderTable(Order.objects.all())
+
+    return render(request, "overview.html" , context) 
+
+def DisplayOverview(request, trading_screen):
+
+    trade  = TradingScreen.objects.get(pk=trading_screen)
+
+    
+    #recupération des dernieres valeurs du portefeuille. 
+    
+    labels=[]
+    data = [0,1,2]
+
+    format = '%Y/%m/%d %H:%M:%S';
+
+    usd = Currency.objects.get(name = "USD")
+
+    actual_portfolio_value =0
+    for currency_amount in trade.currency_amounts.all():
+        currency_1_pk = currency_amount.currency.pk
+        try:
+            pair = Pair.objects.filter(currency_1 =currency_1_pk).get(currency_2 = Currency.objects.get(name = "USD"))
+            pair_value = pair.value
+            actual_portfolio_value += currency_amount.amount*pair_value
+        except:
+            print("pair not found")
+   
+    print(actual_portfolio_value)
+
+    orders = Order.objects.filter(trading_screen=trade).order_by('-created_on')
+
+    for order in orders:
+        portfolio_value = 0
+        labels.append(date.datetime.strftime(order.created_on, format))
+        current_pair = order.pair
+
+
+
     date_form = DateForm()
     order_table = OrderTable(Order.objects.all())
     order_table.paginate(page=request.GET.get("page", 1), per_page=10)
 
+
     context = {
         'date_form' : date_form, 
         'order_table' : order_table,
+        'portfolio_value':portfolio_value,
+        'labels' : labels,
+        'data' : data,
     }
     return render(request, "overview.html" , context)
 

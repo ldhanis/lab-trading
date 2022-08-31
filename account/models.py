@@ -133,7 +133,7 @@ class Order(models.Model):
     fullfilled_on = models.DateTimeField(blank=True, null=True)
     external_id = models.TextField(blank=True, null=True)
     success = models.BooleanField(default=False)
-    updated_balance = models.FloatField(default=0) # updated quantity of the first currency of this pair
+    last_balance = models.FloatField(default=0) # updated quantity of the first currency of this pair
 
 class CurrencyAmount(models.Model):
 
