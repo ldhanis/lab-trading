@@ -6,12 +6,25 @@
 <!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" /> -->
 
 {% endblock %} {% block body %}
-<div class="row g-0">
+<div class="row g-5">
   <div class="col">
+    <div class="statistic-element d-flex justify-content-center align-items-center">
+      <div class="row">
+        <div class="col">
+          First Name : {{trader_infos.first_name}}
+        </div>
+        <div class="col">
+          Last Name : {{trader_infos.last_name}}
+        </div>
+          <div class="col">
+          Phone Number : {{trader_infos.phone_numer}}
+        </div>
+      </div>
+    </div>
     <div
       class="statistic-element d-flex justify-content-center align-items-center"
     >
-      <canvas id="myChart"></canvas>
+    {% render_table currency_table %}
     </div>
     <div
       class="statistic-element d-flex justify-content-center align-items-center chart2-wrapper"
@@ -24,40 +37,28 @@
     <div
       class="statistic-element d-flex justify-content-center align-items-center"
     >
+    <div class="card p-2 text-center">
+      {{trader_infos}}
+    </div>
+    </div>
+    <div
+      class="statistic-element d-flex justify-content-center align-items-center"
+    >
       {% render_table order_table %}
     </div>
     <div
       class="statistic-element d-flex justify-content-center align-items-center"
     >
-      <canvas id="myChart4"></canvas>
+    <div class="card p-2 text-center">
+      <h1>Total portfolio value in USD</h1>
+      <h2>{{ actual_portfolio_value }} $</h2>
+  </div>
     </div>
   </div>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.min.js"></script>
 
-<script>
-  const ctx = document.getElementById("myChart")
-  const myChart = new Chart(ctx, {
-    type: "line",
-    data: {
-      datasets: [
-        {
-          data: {{data|safe}},
-          fill: false,
-          borderColor: "rgb(75, 192, 192)",
-          tension: 0.1,
-          label: "Evolution of the trading screen value",
-        },
-        
-      ],
-      labels: {{ labels|safe }}
-    },
-    options: {
-      responsiveAnimationDuration: 2000,
-      aspectRatio: (window.innerWidth * 40.35) | window.innerHeight,
-    },
-  });
-</script>
+
 <script>
   const ctx2 = document.getElementById("myChart2");
   const myChart2 = new Chart(ctx2, {
@@ -66,14 +67,34 @@
       datasets: [
         {
           label: "My First Dataset",
-          data: [300, 50, 100],
+          data: {{ doughnut_data|safe }},
+          backgroundColor: [
+                'rgba(255, 99, 132, 0.2)',
+                'rgba(54, 162, 235, 0.2)',
+                'rgba(255, 206, 86, 0.2)',
+                'rgba(75, 192, 192, 0.2)',
+                'rgba(153, 102, 255, 0.2)',
+                'rgba(255, 159, 64, 0.2)'
+            ],
+            borderColor: [
+                'rgba(255, 99, 132, 1)',
+                'rgba(54, 162, 235, 1)',
+                'rgba(255, 206, 86, 1)',
+                'rgba(75, 192, 192, 1)',
+                'rgba(153, 102, 255, 1)',
+                'rgba(255, 159, 64, 1)'
+            ],
+            borderWidth: 1,
           label: "Repartition of currency ",
+
         },],
+      labels: {{ labels_doughnut|safe }},
       options: {
         responsiveAnimationDuration: 2000,
         weight: 0.5,
-      },
+      }
     },
+    
   });
 </script>
 {% endblock %}

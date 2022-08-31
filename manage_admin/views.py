@@ -8,7 +8,7 @@ from exchange.forms import ExchangeApiForm, CurrencyForm, PairForm, UpdatePairFo
 from exchange.models import ExchangeApi, Currency, Pair
 from account.forms import TradingScreenForm
 from account.models import CurrencyAmount, TradingScreen, User, Order
-from account.tables import OrderTable
+from account.tables import OrderTable,CurrencyTable
 
 from manage_admin.forms import *
 
@@ -32,7 +32,8 @@ def DisplayOverview(request, trading_screen):
     
     labels=[]
     data = [0,1,2]
-
+    labels_doughnut=[]
+    doughnut=[]
     format = '%Y/%m/%d %H:%M:%S';
 
     usd = Currency.objects.get(name = "USD")
@@ -43,6 +44,8 @@ def DisplayOverview(request, trading_screen):
         try:
             pair = Pair.objects.filter(currency_1 =currency_1_pk).get(currency_2 = Currency.objects.get(name = "USD"))
             pair_value = pair.value
+            labels_doughnut.append(currency_amount.currency.name)
+            doughnut.append(currency_amount.amount*pair_value)
             actual_portfolio_value += currency_amount.amount*pair_value
         except:
             print("pair not found")
@@ -59,17 +62,29 @@ def DisplayOverview(request, trading_screen):
 
 
     date_form = DateForm()
+    currency_table = CurrencyTable(trade.currency_amounts.all())
+    currency_table.paginate(page=request.GET.get("page", 1), per_page=10)
     order_table = OrderTable(Order.objects.all())
     order_table.paginate(page=request.GET.get("page", 1), per_page=10)
 
 
+    #repartition des currency
+
+    trader_infos = trade.user
+
     context = {
         'date_form' : date_form, 
         'order_table' : order_table,
+        'currency_table' : currency_table,
         'portfolio_value':portfolio_value,
         'labels' : labels,
         'data' : data,
+        'doughnut_data' : doughnut,
+        'labels_doughnut' : labels_doughnut,
+        'actual_portfolio_value' : actual_portfolio_value,
+        'trader_infos' : trader_infos,
     }
+    
     return render(request, "overview.html" , context)
 
 @staff_member_required

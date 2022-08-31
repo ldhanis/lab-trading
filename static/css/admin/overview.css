@@ -4,7 +4,7 @@ a{
 }
 .statistic-element{
     height:40.35vh;
-    width:100%
+    width:95%
     
 }
 canvas{
@@ -13,7 +13,7 @@ canvas{
 #myChart2{
 }
 .chart2-wrapper{
-    width:40.35vh;
+    width:50vh;
     margin: auto;
 }
 .table-container{

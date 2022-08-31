@@ -4,6 +4,9 @@ from exchange.models import *
 from account.models import *
 from django.db.models import Max
 
+
+from account.tables import OrderTable,CurrencyTable
+
 # List assets owned by the user
 # Display pairs
 
@@ -33,7 +36,6 @@ def user_dashboard(request, trading_screen_id):
 def trading_dashboard(request, trading_screen_id, currency_1_symbol, currency_2_symbol):
 
     trading_screen = request.user.trading_screens.get(id=trading_screen_id)
-
     print(currency_1_symbol, currency_2_symbol)
 
     currency_1 = Currency.objects.get(symbol=currency_1_symbol)
@@ -69,13 +71,19 @@ def trading_dashboard(request, trading_screen_id, currency_1_symbol, currency_2_
 
     print(amount_1, amount_2)
 
+    
+    order_table = OrderTable(Order.objects.filter(trading_screen = trading_screen))
+    order_table.paginate(page=request.GET.get("page", 1), per_page=10)
+
     context = {
         'pair_symbol': '{}{}'.format(currency_1.name, currency_2.name),
         'amount_1': amount_1,
         'amount_2': amount_2,
         'currency_1': currency_1,
         'currency_2': currency_2,
-        'trading_screen': trading_screen}
+        'trading_screen': trading_screen,
+        'order_table' : order_table,
+    }
     return render(request, 'trading_screen.html', context)
 
 

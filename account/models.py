@@ -108,6 +108,7 @@ class TradingScreen(models.Model):
         order_obj.pair = pair
         order_obj.amount = amount_currency_1
         order_obj.trading_screen = self
+        order_obj.last_balance = CurrencyAmount.filter(currency = pair.currency_1).last()
         order_obj.save()
 
         if order_type == 'market':
