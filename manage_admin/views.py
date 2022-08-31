@@ -14,6 +14,7 @@ from manage_admin.forms import *
 
 def DisplayOverview(request):
 
+
     currencies = CurrencyAmount.objects.filter(trading_screen = TradingScreen.objects.get(pk=1))
     trade  = TradingScreen.objects.get(pk=1)
     new_currencies = trade.currency_amounts.all()
