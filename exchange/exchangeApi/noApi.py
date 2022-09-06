@@ -1,6 +1,7 @@
 from exchange.models import * 
 from account.models import *
 import datetime
+from django.utils import timezone
 
 class NoAPI():
 
@@ -22,13 +23,13 @@ class NoAPI():
 
         order_obj.success = True
         order_obj.external_id = 'noApi'
-        order_obj.fullfilled_on = datetime.datetime.now()
+        order_obj.fullfilled_on=timezone.now()
         order_obj.save()
 
     # Buy or sell according to a "limit" price
     # If we place a buy order and the market hits the limit price or below, the order is completed
     # If we place a sell order and the market hits the limit price or above, the order is completed
-    def market_order(self, order_obj):
+    def limit_order(self, order_obj):
         order_obj.success = True
         order_obj.external_id = 'noApi'
         order_obj.save()
@@ -40,3 +41,7 @@ class NoAPI():
     # Create a sell order at defined price when the trade is
     def take_profit(self, user, pair, volume, trigger_price):
         pass
+
+
+    def get_currencies_amounts(self):
+        return {}
