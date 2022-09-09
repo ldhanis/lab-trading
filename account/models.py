@@ -3,6 +3,7 @@ from django.contrib.auth.models import AbstractUser
 from django.utils.translation import gettext_lazy as _
 from django.db import models
 
+from datetime import datetime
 from exchange.models import *
 
 from account.manager import UserManager
@@ -10,6 +11,7 @@ from account.manager import UserManager
 
 orders_types = ["market", "limit", "stop-loss", "take-profit",
                 "stop-loss-limit", "take-profit-limit", "settle-position"]
+
 
 class NotEnoughBalance(Exception):
     pass
@@ -21,7 +23,7 @@ class User(AbstractUser):
 
     """
     User object
-    Represents a person 
+    Represents a person
     """
 
     username = None
@@ -77,18 +79,15 @@ class TradingScreen(models.Model):
 
         for symbol, balance in currencies_amounts.items():
 
-            # Try to find CurrencyAmounts linked to this tradingScreen and update it with the API portfolio
+            # Create a currency amount
 
             try:
 
                 currency = Currency.objects.filter(
                     exchange=self.exchange_api.exchange).get(symbol=symbol)
 
-                currency_amount, created = CurrencyAmount.objects.get_or_create(
-                    currency=currency, trading_screen=self)
-
-                currency_amount.amount = balance
-                currency_amount.save()
+                currency_amount = CurrencyAmount.objects.create(
+                    currency=currency, trading_screen=self, amount=balance)
 
                 print(currency_amount)
 
@@ -110,7 +109,8 @@ class TradingScreen(models.Model):
         order_obj.limit = limit_price_currency_1
         order_obj.trigger_price = trigger_price_currency_1
         order_obj.trading_screen = self
-        #order_obj.last_balance = CurrencyAmount.filter(currency = pair.currency_1).last()
+        order_obj.last_balance = CurrencyAmount.objects.filter(trading_screen=self).filter(
+            currency=pair.currency_1).last()
         order_obj.direction = direction
         order_obj.save()
 
@@ -130,27 +130,75 @@ class TradingScreen(models.Model):
 
         self.sync_currency_amounts()
 
+    def get_pair_price_history(self, pair, date_from, date_to, total_intervals):
 
-class Order(models.Model):
+        ret_list = []
 
-    type_of_order = models.CharField(max_length=255)
-    direction = models.CharField(max_length=255, default="buy")
-    pair = models.ForeignKey(Pair, on_delete=models.CASCADE)
-    amount = models.FloatField(default=0)  #amount of first pairs
-    limit = models.FloatField(null=True, blank=True)
-    trigger_price = models.FloatField(null=True, blank=True)
-    fees = models.FloatField(default=0)
-    trading_screen = models.ForeignKey(TradingScreen, on_delete=models.CASCADE)
-    created_on = models.DateTimeField(auto_now_add=True)
-    fullfilled_on = models.DateTimeField(blank=True, null=True)
-    external_id = models.TextField(blank=True, null=True)
-    success = models.BooleanField(default=False)
-    last_balance = models.FloatField(default=0) # updated quantity of the first currency of this pair
+        # Calculate dates
+        time_between = (date_to - date_from) / total_intervals
+
+        for i in range(0, total_intervals + 1):
+
+            date_at = date_from + (time_between * i)
+
+            # Find pair value at that time
+            pair_value = PairValue.objects.filter(pair=pair).filter(
+                created_on__lte=date_at).order_by('id').last()
+            pair_price = pair_value.value if pair_value else 0
+            currency_1_amount = CurrencyAmount.objects.filter(trading_screen=self).filter(currency=pair.currency_1).filter(
+                created_on__lte=date_at).order_by('id').last()
+            currency_2_amount = CurrencyAmount.objects.filter(trading_screen=self).filter(currency=pair.currency_2).filter(
+                created_on__lte=date_at).order_by('id').last()
+            currency_1_amount_amount = currency_1_amount.amount if currency_1_amount else 0
+            currency_1_amount_price = currency_1_amount_amount * pair_price
+
+            ret_list.append(
+                {
+                    'time': date_at,
+                    'pair_price': pair_price,
+                    'currency_1_amount': currency_1_amount_amount,
+                    'currency_1_amount_price': currency_1_amount_price,
+                    'currency_2_amount' : currency_2_amount.amount if currency_2_amount else 0
+                }
+            )
+
+        return ret_list
+
+    def get_currency_amount_history(self, currency, date_from, date_to, total_intervals):
+        ret_list = []
+
+        # Calculate dates
+        time_between = (date_to - date_from) / total_intervals
+
+        for i in range(0, total_intervals + 1):
+
+            date_at = date_from + (time_between * i)
+            currency_amount = CurrencyAmount.objects.filter(trading_screen=self).filter(currency=currency).filter(
+                created_on__lte=date_at).order_by('id').last()
+
+            ret_list.append(
+                {
+                    'time': date_at,
+                    'currency_amount' : currency_amount.amount if currency_amount else 0
+                }
+            )
+        return ret_list
+
+    def new_currency_pair_values(self, pair):
+        new_user_currency_1_amount = CurrencyAmount.objects.create(
+            currency=pair.currency_1, trading_screen=self)
+        new_user_currency_2_amount = CurrencyAmount.objects.create(
+            currency=pair.currency_2, trading_screen=self)
+
+        return (new_user_currency_1_amount, new_user_currency_2_amount)
+        start_amount += pair_portfolio_history[0]['currency_1_amount_price']
+
 
 class CurrencyAmount(models.Model):
 
     currency = models.ForeignKey(Currency, on_delete=models.CASCADE)
     amount = models.FloatField(default=0)
+    created_on = models.DateTimeField(default=datetime.now, blank=True)
     trading_screen = models.ForeignKey(
         TradingScreen, null=True, on_delete=models.CASCADE, related_name="currency_amounts")
 
@@ -161,3 +209,22 @@ class CurrencyAmount(models.Model):
 
     def __str__(self):
         return '{} {} : {}'.format(self.trading_screen, self.currency, self.amount)
+
+
+class Order(models.Model):
+
+    type_of_order = models.CharField(max_length=255)
+    direction = models.CharField(max_length=255, default="buy")
+    pair = models.ForeignKey(Pair, on_delete=models.CASCADE)
+    amount = models.FloatField(default=0)  # amount of first pairs
+    limit = models.FloatField(null=True, blank=True)
+    trigger_price = models.FloatField(null=True, blank=True)
+    fees = models.FloatField(default=0)
+    trading_screen = models.ForeignKey(TradingScreen, on_delete=models.CASCADE)
+    created_on = models.DateTimeField(auto_now_add=True)
+    fullfilled_on = models.DateTimeField(blank=True, null=True)
+    external_id = models.TextField(blank=True, null=True)
+    success = models.BooleanField(default=False)
+    # updated quantity of the first currency of this pair
+    last_balance = models.ForeignKey(
+        CurrencyAmount, on_delete=models.SET_NULL, null=True)

@@ -1,4 +1,3 @@
-from tkinter.messagebox import RETRY
 from django.db import models
 from exchange.exchangeApi import krakenApi, noApi
 
@@ -21,7 +20,6 @@ class ExchangeApi(models.Model):
             return krakenApi.KrakenAPI(self.authentication)
 
 
-
 class Currency(models.Model):
 
     exchange = models.CharField(
@@ -34,7 +32,8 @@ class Currency(models.Model):
 
     def get_market_value(self, currency_2_symbol):
         try:
-            value = Pair.objects.filter(currency_1=self).get(currency_2__symbol=currency_2_symbol).value
+            value = Pair.objects.filter(currency_1=self).get(
+                currency_2__symbol=currency_2_symbol).value
         except:
             value = 0
         return value
@@ -49,16 +48,30 @@ class Pair(models.Model):
     active = models.BooleanField(default=False)
     symbol = models.CharField(max_length=255, default="")
     last_updated = models.DateTimeField(auto_now=True)
-    value  = models.FloatField(default=0)
-    previous_value = models.FloatField(default=0)
+    value = models.FloatField(default=0)
 
     def __str__(self):
         return '{}/{} ({}{}) - {}'.format(self.currency_1.symbol, self.currency_2.symbol, self.currency_1.name, self.currency_2.name, self.value)
 
     def update_value(self, value):
-        self.previous_value = float(self.value)
-        self.value = float(value)
-        self.save()
+        new_value = PairValue()
+        new_value.value = value
+        new_value.pair = self
+        new_value.save()
+
+    @property
+    def previous_value(self):
+        try:
+            return self.values_history.all().order_by('-id')[1].value
+        except:
+            return 0
+
+    @property
+    def value(self):
+        try:
+            return self.values_history.last().value
+        except:
+            return 0
 
     @property
     def krkn_symbol(self):
@@ -67,3 +80,10 @@ class Pair(models.Model):
     @property
     def krkn_name(self):
         return f'{self.currency_1.name}{self.currency_2.name}'
+
+
+class PairValue(models.Model):
+    pair = models.ForeignKey(
+        Pair, on_delete=models.CASCADE, related_name="values_history")
+    created_on = models.DateTimeField(auto_now_add=True)
+    value = models.FloatField(default=0)

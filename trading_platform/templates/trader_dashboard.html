@@ -1,23 +1,63 @@
-{% extends 'layouts/base.html' %}
-{% load static %}
-{% block head %}
-{% endblock head %}
-{% block body %}
-    <div class="row mt-4">
-        <div class="col-md-4 p-2">
-            <div class="card p-2 text-center">
-                <h1>Total portfolio value in USD</h1>
-                <h2>{{ portfolio_usd_value }} $</h2>
-            </div>
-        </div>
-        <div class="col">
-            <ul>
-                {% for pair in pairs %}
-                    <li>
-                        <a href="{% url 'trading_dashboard' trading_screen.id pair.currency_1.symbol pair.currency_2.symbol %}">{{ pair }}</a>
-                    </li>
-                {% endfor %}
-            </ul>
-        </div>
+{% extends 'layouts/base.html' %} {% load static %}{% load jsonify %} 
+{% block head %} {% endblock head %} {% block body %}
+<div class="row mt-4">
+  <div class="card p-1 col-12">
+    <canvas id="myChart" width="800" height="400"></canvas>
+  </div>
+</div>
+<div class="row mt-4">
+  <div class="col-md-4 p-2">
+    <div class="card p-2 text-center">
+      <h1>Total portfolio value in USD</h1>
+      <h2>{{ portfolio_usd_value }} $</h2>
+      <h2 style="color: {{evolve_color}}">{% if portfolio_evolve > 0%}+{% endif %}{{portfolio_evolve}}%</h2>
     </div>
-{% endblock body %}
+  </div>
+  <div class="col">
+    <ul>
+      {% for pair in pairs %}
+      <li>
+        <a
+          href="{% url 'trading_dashboard' trading_screen.id pair.currency_1.symbol pair.currency_2.symbol %}"
+          >{{ pair }}</a
+        >
+      </li>
+      {% endfor %}
+    </ul>
+  </div>
+</div>
+{% endblock body %} {% block javascript %}
+<script>
+  const ctx = document.getElementById("myChart");
+
+  const labels = {{ labels|jsonify }};
+  const data = {
+    labels: labels,
+    datasets: {{ datasets|jsonify}},
+  };
+
+  const config = {
+    type: "line",
+    data: data,
+    options: {
+      plugins: {
+        title: {
+          display: true,
+          text: "Portfolio evolution (last 24 hours every 30 minutes)",
+        },
+      },
+      responsive: true,
+      scales: {
+        x: {
+          stacked: true,
+        },
+        y: {
+          stacked: true,
+        },
+      },
+    },
+  };
+
+  const myChart = new Chart(ctx, config);
+</script>
+{% endblock javascript %}

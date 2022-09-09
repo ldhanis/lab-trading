@@ -51,7 +51,8 @@ INSTALLED_APPS = [
 
     'crispy_forms',
     'chartjs',
-    'django_tables2'
+    'django_tables2',
+    'jsonify'
 ]
 
 LOGIN_REDIRECT_URL = '/account/'

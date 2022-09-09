@@ -21,6 +21,26 @@ class NoAPI():
     # Buy or sell according to the market price at the order completion time
     def market_order(self, order_obj):
 
+        # Update prices
+        # Get current currency_1 amount and currency_2 amount
+        user_currency_1_amount = order_obj.trading_screen.currency_amounts.filter(currency=order_obj.pair.currency_1).last()
+        user_currency_2_amount = order_obj.trading_screen.currency_amounts.filter(currency=order_obj.pair.currency_2).last()
+
+        # If we have a Buy market order, we diminish the currency_2 in profit of the currency_1 and viceversa
+        # Let's create new currency_amount objs to keep an history
+
+        new_user_currency_1_amount, new_user_currency_2_amount = order_obj.trading_screen.new_currency_pair_values(order_obj.pair)
+
+        if order_obj.direction == 'buy':
+            new_user_currency_1_amount.amount = user_currency_1_amount.amount + order_obj.amount
+            new_user_currency_2_amount.amount = user_currency_2_amount.amount - order_obj.pair.value * order_obj.amount
+        else:
+            new_user_currency_1_amount.amount = user_currency_1_amount.amount - order_obj.amount
+            new_user_currency_2_amount.amount = user_currency_2_amount.amount + order_obj.pair.value * order_obj.amount
+
+        new_user_currency_1_amount.save()
+        new_user_currency_2_amount.save()
+
         order_obj.success = True
         order_obj.external_id = 'noApi'
         order_obj.fullfilled_on=timezone.now()
