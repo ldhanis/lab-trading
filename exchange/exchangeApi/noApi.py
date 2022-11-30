@@ -1,7 +1,8 @@
-from exchange.models import * 
+from exchange.models import *
 from account.models import *
 import datetime
 from django.utils import timezone
+
 
 class NoAPI():
 
@@ -23,27 +24,32 @@ class NoAPI():
 
         # Update prices
         # Get current currency_1 amount and currency_2 amount
-        user_currency_1_amount = order_obj.trading_screen.currency_amounts.filter(currency=order_obj.pair.currency_1).last()
-        user_currency_2_amount = order_obj.trading_screen.currency_amounts.filter(currency=order_obj.pair.currency_2).last()
+        user_currency_1_amount = order_obj.trading_screen.currency_amounts.filter(
+            currency=order_obj.pair.currency_1).last()
+        user_currency_2_amount = order_obj.trading_screen.currency_amounts.filter(
+            currency=order_obj.pair.currency_2).last()
 
         # If we have a Buy market order, we diminish the currency_2 in profit of the currency_1 and viceversa
         # Let's create new currency_amount objs to keep an history
 
-        new_user_currency_1_amount, new_user_currency_2_amount = order_obj.trading_screen.new_currency_pair_values(order_obj.pair)
+        new_user_currency_1_amount, new_user_currency_2_amount = order_obj.trading_screen.new_currency_pair_values(
+            order_obj.pair)
 
         if order_obj.direction == 'buy':
             new_user_currency_1_amount.amount = user_currency_1_amount.amount + order_obj.amount
-            new_user_currency_2_amount.amount = user_currency_2_amount.amount - order_obj.pair.value * order_obj.amount
+            new_user_currency_2_amount.amount = user_currency_2_amount.amount - \
+                order_obj.pair.value * order_obj.amount
         else:
             new_user_currency_1_amount.amount = user_currency_1_amount.amount - order_obj.amount
-            new_user_currency_2_amount.amount = user_currency_2_amount.amount + order_obj.pair.value * order_obj.amount
+            new_user_currency_2_amount.amount = user_currency_2_amount.amount + \
+                order_obj.pair.value * order_obj.amount
 
         new_user_currency_1_amount.save()
         new_user_currency_2_amount.save()
 
         order_obj.success = True
         order_obj.external_id = 'noApi'
-        order_obj.fullfilled_on=timezone.now()
+        order_obj.fullfilled_on = timezone.now()
         order_obj.save()
 
     # Buy or sell according to a "limit" price
@@ -62,6 +68,27 @@ class NoAPI():
     def take_profit(self, user, pair, volume, trigger_price):
         pass
 
-
     def get_currencies_amounts(self):
         return {}
+
+    def handle_order_creation(self, order_api):
+        print('ORDER CREATED SUCCESSFULLY USING THE NO API API')
+
+    def handle_stop_loss(self, order_obj):
+        pass
+
+    def handle_take_profit(self, order_obj):
+        pass
+
+    def get_open_orders(self):
+        pass
+
+    def cancel_order(self, order_obj):
+        print('ORDER CANCELLED SUCCESSFULLY')
+        order_obj.order_cancelled_at = timezone.now()
+        order_obj.save()
+
+    def cancel_all_orders(self, orders):
+        orders = orders.filter(position_opened_at=None).filter(
+            position_closed_at=None).filter(order_cancelled_at=None)
+        orders.update(order_cancelled_at=timezone.now())
